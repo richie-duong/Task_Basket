@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
+import { ObjectId, MongoClient } from "mongodb";
 import dotenv from "dotenv";
+
+import admin from "firebase-admin"
 
 const app = express();
 
@@ -26,16 +28,33 @@ async function connectToDatabase() {
   }
 }
 
+app.get("/dashboard", async (req, res) => {
+  try {
+    const tasks = await db.collection("tasks").find().toArray();
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.get("/weather", async (req, res) => {
+})
+
+app.get("/traffic", async (req, res) => {
+})
+
 app.get("/tasks", async (req, res) => {
-    try {
-        const tasks = await db.collection("tasks").find().toArray();
-        res.status(200).json(tasks);
-    } catch (error) {
-        res.status(500).json({
-            error: error.message
-        })
-    }
- })
+  try {
+    const tasks = await db.collection("tasks").find().toArray();
+    res.status(200).json(tasks);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 app.post("/add-task", async (req, res) => {
   try {
@@ -44,9 +63,10 @@ app.post("/add-task", async (req, res) => {
       taskName: req.body.taskName,
       taskStartDate: req.body.taskStartDate,
       taskDeadline: req.body.taskDeadline,
-      taskLocation: req.body.taskLocation,
+      taskLocation: (req.body.taskLocation === "" ? "Unknown" : req.body.taskLocation),
       taskDescription: req.body.taskDescription,
       taskCompleted: false,
+      taskCompletionDate: null,
       createdAt: new Date(),
     };
 
@@ -57,6 +77,114 @@ app.post("/add-task", async (req, res) => {
       .json({ message: "Task created", insertedId: result.insertedId });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/edit-task/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const task = await db.collection("tasks").findOne({
+      _id: new ObjectId(taskId),
+    });
+    res.status(200).json(task);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.put("/edit-task/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const updatedTask = {
+      taskName: req.body.taskName,
+      taskStartDate: req.body.taskStartDate,
+      taskDeadline: req.body.taskDeadline,
+      taskLocation: req.body.taskLocation,
+      taskDescription: req.body.taskDescription,
+    };
+    const response = await db.collection("tasks").updateOne(
+      {
+        _id: new ObjectId(taskId),
+      },
+      {
+        $set: updatedTask,
+      },
+    );
+    res.status(200).json({ message: "Task updated successfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.delete("/edit-task/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    const response = await db
+      .collection("tasks")
+      .deleteOne({ _id: new ObjectId(taskId) });
+    res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.put("/complete-task/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+    await db.collection("tasks").updateOne(
+      {
+        _id: new ObjectId(taskId),
+      },
+
+      {
+        $set: {
+          taskCompleted: true,
+
+          taskCompletionDate: new Date(),
+        },
+      },
+    );
+
+    res.status(200).json({
+      message: "Task completed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.put("/uncomplete-task/:id", async (req, res) => {
+  try {
+    const taskId = req.params.id;
+
+    await db.collection("tasks").updateOne(
+      {
+        _id: new ObjectId(taskId),
+      },
+
+      {
+        $set: {
+          taskCompleted: false,
+
+          taskCompletionDate: null,
+        },
+      },
+    );
+    res.status(200).json({
+      message: "Task reverted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
   }
 });
 

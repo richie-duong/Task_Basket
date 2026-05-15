@@ -2,7 +2,6 @@ import { useState } from 'react'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import axios from 'axios';
 import Layout from './Layout';
-import './App.css'
 
 import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
@@ -14,7 +13,6 @@ import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 
-// Referred to in creating Routes
 const routes = [{
   path: '/',
   element: <Layout />,
@@ -32,7 +30,7 @@ const routes = [{
     path: '/add-task',
     element: <AddTaskPage />,
   }, {
-    path: '/edit-task',
+    path: '/edit-task/:id',
     element: <EditTaskPage />,
   }, {
     path: '/settings',
@@ -46,12 +44,10 @@ const routes = [{
   }]
 }]
 
-// Create routes
 const router = createBrowserRouter(routes);
 
 function App() {
   return (
-    // Returns content from router
     <RouterProvider router={router} />
   )
 }

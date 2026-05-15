@@ -14,7 +14,6 @@ export default function AddTaskPage() {
   const navigate = useNavigate();
 
   async function addTask() {
-    // Input validation
     if (taskLocation === "Other" && !locationName) {
       alert("Please enter a location name.");
       return;
@@ -22,8 +21,11 @@ export default function AddTaskPage() {
 
     const taskData = {
       taskName,
+      taskStartDate,
       taskDeadline,
+
       taskLocation: taskLocation === "Other" ? locationName : taskLocation,
+
       taskDescription,
     };
 
@@ -32,77 +34,152 @@ export default function AddTaskPage() {
         "http://localhost:3000/add-task",
         taskData,
       );
+
       console.log(response.data);
+
       alert("Task added successfully!");
+
       navigate(-1);
     } catch (error) {
       console.log(error);
     }
   }
 
+  function clearForm() {
+    setTaskName("");
+    setTaskStartDate("");
+    setTaskDeadline("");
+    setTaskLocation("");
+    setLocationName("");
+    setTaskDescription("");
+  }
+
   return (
     <>
-      <h1>Add Task</h1>
-      <input
-        type="text"
-        id="task-name"
-        placeholder="Task Name"
-        value={taskName}
-        onChange={(event) => setTaskName(event.target.value)}
-      />
-      <input
-        type="datetime-local"
-        id="task-start-date"
-        value={taskStartDate}
-        onChange={(event) => setTaskStartDate(event.target.value)}
-      />
-      <input
-        type="datetime-local"
-        id="task-deadline"
-        value={taskDeadline}
-        onChange={(event) => setTaskDeadline(event.target.value)}
-      />
-      <select
-        onChange={(event) => setTaskLocation(event.target.value)}
-        value={taskLocation}
-      >
-        <option value="" disabled hidden>
-          Select your task location
-        </option>
-        <option value="Home">Home</option>
-        <option value="Online">Online</option>
-        <option value="Other">Other</option>
-      </select>
-      {taskLocation === "Other" ? (
-        <input
-          type="text"
-          id="other-task-name"
-          placeholder="Location Name"
-          required
-          onChange={(event) => {
-            setLocationName(event.target.value);
-          }}
-          value={locationName}
-        />
-      ) : null}
-      <textarea
-        placeholder="Text Description"
-        value={taskDescription}
-        onChange={(event) => setTaskDescription(event.target.value)}
-      />
-      <button onClick={addTask}>Submit</button>
-      <button
-        onClick={() => {
-          setTaskName("");
-          setTaskStartDate("");
-          setTaskDeadline("");
-          setTaskLocation("");
-          setTaskDescription("");
-        }}
-      >
-        Clear
-      </button>
+      <title>Task Basket | Add Task</title>
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-8 col-lg-6">
+            <div className="card shadow">
+              <div className="card-body p-4">
+                <button
+                  className="btn btn-outline-secondary mb-3"
+                  onClick={() => navigate(-1)}
+                >
+                  ← Back
+                </button>
+
+                <h1 className="mb-4 text-center">Add Task</h1>
+
+                <div className="mb-3">
+                  <label htmlFor="task-name" className="form-label">
+                    Task Name
+                  </label>
+
+                  <input
+                    type="text"
+                    id="task-name"
+                    className="form-control"
+                    placeholder="Enter task name"
+                    value={taskName}
+                    onChange={(event) => setTaskName(event.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="task-start-date" className="form-label">
+                    Start Date / Time
+                  </label>
+
+                  <input
+                    type="datetime-local"
+                    id="task-start-date"
+                    className="form-control"
+                    value={taskStartDate}
+                    onChange={(event) => setTaskStartDate(event.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="task-deadline" className="form-label">
+                    Deadline
+                  </label>
+
+                  <input
+                    type="datetime-local"
+                    id="task-deadline"
+                    className="form-control"
+                    value={taskDeadline}
+                    onChange={(event) => setTaskDeadline(event.target.value)}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Task Location</label>
+
+                  <select
+                    className="form-select"
+                    value={taskLocation}
+                    onChange={(event) => setTaskLocation(event.target.value)}
+                  >
+                    <option value="" disabled hidden>
+                      Select your task location
+                    </option>
+
+                    <option value="Home">Home</option>
+
+                    <option value="Online">Online</option>
+
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {taskLocation === "Other" ? (
+                  <div className="mb-3">
+                    <label htmlFor="other-task-name" className="form-label">
+                      Custom Location
+                    </label>
+
+                    <input
+                      type="text"
+                      id="other-task-name"
+                      className="form-control"
+                      placeholder="Enter location name"
+                      value={locationName}
+                      onChange={(event) => setLocationName(event.target.value)}
+                    />
+                  </div>
+                ) : null}
+
+                <div className="mb-4">
+                  <label className="form-label">Description</label>
+
+                  <textarea
+                    className="form-control"
+                    rows="4"
+                    placeholder="Enter task description"
+                    value={taskDescription}
+                    onChange={(event) => setTaskDescription(event.target.value)}
+                  />
+                </div>
+
+                <div className="d-flex gap-2">
+                  <button className="btn btn-primary w-100" onClick={addTask}>
+                    Submit Task
+                  </button>
+
+                  <button
+                    className="btn btn-outline-secondary w-100"
+                    onClick={clearForm}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
-
