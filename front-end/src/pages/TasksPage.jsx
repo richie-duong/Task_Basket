@@ -4,6 +4,9 @@ import axios from "axios";
 
 import formatDate from "../FormatDate";
 
+import getAuthHeaders from "../utils/getAuthHeaders";
+
+
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -12,8 +15,8 @@ export default function TasksPage() {
 
   async function fetchTasks() {
     try {
-      const response = await axios.get("http://localhost:3000/tasks");
-
+      const config = await getAuthHeaders();
+      const response = await axios.get("http://localhost:3000/tasks", config);
       setTasks(response.data);
     } catch (error) {
       console.log(error);
@@ -27,7 +30,10 @@ export default function TasksPage() {
   // COMPLETE TASK
   async function completeTask(taskId) {
     try {
-      await axios.put(`http://localhost:3000/complete-task/${taskId}`);
+      const config = await getAuthHeaders();
+      await axios.put(`http://localhost:3000/complete-task/${taskId}`, 
+        {},
+        config);
 
       fetchTasks();
     } catch (error) {
@@ -38,8 +44,10 @@ export default function TasksPage() {
   // UNDO COMPLETED TASK
   async function uncompleteTask(taskId) {
     try {
-      await axios.put(`http://localhost:3000/uncomplete-task/${taskId}`);
-
+      const config = await getAuthHeaders();
+      await axios.put(`http://localhost:3000/uncomplete-task/${taskId}`,
+        {},
+        config);
       fetchTasks();
     } catch (error) {
       console.log(error);
@@ -167,7 +175,6 @@ export default function TasksPage() {
                           className="btn btn-success btn-sm"
                           onClick={(event) => {
                             event.stopPropagation();
-
                             completeTask(task._id);
                           }}
                         >
@@ -178,7 +185,6 @@ export default function TasksPage() {
                           className="btn btn-warning btn-sm"
                           onClick={(event) => {
                             event.stopPropagation();
-
                             navigate(`/edit-task/${task._id}`);
                           }}
                         >
@@ -191,7 +197,6 @@ export default function TasksPage() {
                           className="btn btn-secondary btn-sm"
                           onClick={(event) => {
                             event.stopPropagation();
-
                             uncompleteTask(task._id);
                           }}
                         >
@@ -202,7 +207,6 @@ export default function TasksPage() {
                           className="btn btn-warning btn-sm"
                           onClick={(event) => {
                             event.stopPropagation();
-
                             navigate(`/edit-task/${task._id}`);
                           }}
                         >

@@ -4,12 +4,19 @@ import axios from "axios";
 
 import formatDate from "../FormatDate";
 
+import getAuthHeaders from "../utils/getAuthHeaders";
+import { useId } from "react";
+
+
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([]);
 
   async function fetchTasks() {
+
+  const config = await getAuthHeaders();
+
     try {
-      const response = await axios.get("http://localhost:3000/tasks");
+      const response = await axios.get("http://localhost:3000/tasks", config);
 
       setTasks(response.data);
     } catch (error) {
@@ -59,7 +66,10 @@ export default function DashboardPage() {
 
   async function completeTask(taskId) {
     try {
-      await axios.put(`http://localhost:3000/complete-task/${taskId}`);
+      const config = await getAuthHeaders();
+      await axios.put(`http://localhost:3000/complete-task/${taskId}`,
+        {}, 
+        config);
 
       fetchTasks();
     } catch (error) {
@@ -85,7 +95,7 @@ export default function DashboardPage() {
 
       <div className="container py-4">
         <div className="mb-4">
-          <h1 className="fw-bold display-6">Welcome Back, Richard!</h1>
+          <h2 className="fw-bold display-6">Welcome back!</h2>
         </div>
 
         <div className="card shadow-sm border-0 rounded-4">

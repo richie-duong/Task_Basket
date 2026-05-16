@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import getAuthHeaders from "../utils/getAuthHeaders";
+
 export default function AddTaskPage() {
   const [taskId, setTaskId] = useState("");
   const [taskName, setTaskName] = useState("");
@@ -23,16 +25,17 @@ export default function AddTaskPage() {
       taskName,
       taskStartDate,
       taskDeadline,
-
       taskLocation: taskLocation === "Other" ? locationName : taskLocation,
-
       taskDescription,
     };
+
+    const config = await getAuthHeaders();
 
     try {
       const response = await axios.post(
         "http://localhost:3000/add-task",
         taskData,
+        config
       );
 
       console.log(response.data);

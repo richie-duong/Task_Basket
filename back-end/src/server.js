@@ -116,8 +116,9 @@ app.post("/add-task", authenticateUser, async (req, res) => {
       taskName: req.body.taskName,
       taskStartDate: req.body.taskStartDate,
       taskDeadline: req.body.taskDeadline,
-      taskLocation:
-        req.body.taskLocation === "" ? "Unknown" : req.body.taskLocation,
+      taskLocation: req.body.taskLocation === "" 
+        ? "Unknown" 
+        : req.body.taskLocation,
       taskDescription: req.body.taskDescription,
       taskCompleted: false,
       taskCompletionDate: null,

@@ -11,7 +11,7 @@ import EditTaskPage from './pages/EditTaskPage'
 import NotFoundPage from './pages/NotFoundPage'
 import SettingsPage from './pages/SettingsPage'
 import LoginPage from './pages/LoginPage'
-import SignUpPage from './pages/SignUpPage'
+import RegisterPage from './pages/RegisterPage'
 
 const routes = [{
   path: '/',
@@ -39,8 +39,8 @@ const routes = [{
     path: '/login',
     element: <LoginPage />,
   }, {
-    path: '/signup',
-    element: <SignUpPage />,
+    path: '/register',
+    element: <RegisterPage />,
   }]
 }]
 

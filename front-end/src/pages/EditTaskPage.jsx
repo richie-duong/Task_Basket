@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate, useParams } from "react-router-dom";
-
 import axios from "axios";
+
+import getAuthHeaders from "../utils/getAuthHeaders";
+
 
 export default function EditTaskPage() {
   const { id } = useParams();
@@ -18,9 +19,13 @@ export default function EditTaskPage() {
 
   useEffect(() => {
     async function fetchTask() {
+
+      const config = await getAuthHeaders();
+
       try {
         const response = await axios.get(
-          `http://localhost:3000/edit-task/${id}`,
+          `http://localhost:3000/edit-task/${id}`, 
+          config
         );
 
         const task = response.data;
@@ -39,6 +44,9 @@ export default function EditTaskPage() {
   }, [id]);
 
   async function updateTask() {
+    
+    const config = await getAuthHeaders();
+
     if (taskLocation === "Other" && !locationName) {
       alert("Please enter a location name.");
 
@@ -54,7 +62,7 @@ export default function EditTaskPage() {
     };
 
     try {
-      await axios.put(`http://localhost:3000/edit-task/${id}`, updatedTask);
+      await axios.put(`http://localhost:3000/edit-task/${id}`, updatedTask, config);
 
       alert("Task updated successfully!");
 
@@ -74,8 +82,8 @@ export default function EditTaskPage() {
     }
 
     try {
-      await axios.delete(`http://localhost:3000/edit-task/${id}`);
-
+      const config = await getAuthHeaders();
+      await axios.delete(`http://localhost:3000/edit-task/${id}`, config);
       alert("Task deleted successfully!");
 
       navigate(-1);
