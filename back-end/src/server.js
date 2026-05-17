@@ -1,4 +1,5 @@
 import express from "express";
+import axios from "axios";
 import cors from "cors";
 import { ObjectId, MongoClient } from "mongodb";
 import dotenv from "dotenv";
@@ -66,6 +67,36 @@ async function connectToDatabase() {
   }
 }
 
+app.post("/create-profile", authenticateUser, async (req, res) => {
+  try {
+    const userData = {
+      uid: req.user.uid,
+      email: req.user.email,
+      postalCode: req.body.postalCode,
+      createdAt: new Date(),
+    };
+
+    await db.collection("users").updateOne(
+      {
+        uid: req.user.uid,
+      },
+      {
+        $set: userData,
+      },
+      {
+        upsert: true,
+      },
+    );
+
+    res.status(201).json({
+      message: "User profile created successfully!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 app.get("/dashboard", authenticateUser, async (req, res) => {
   try {
@@ -84,12 +115,24 @@ app.get("/dashboard", authenticateUser, async (req, res) => {
   }
 });
 
-
-app.get("/weather", authenticateUser, async (req, res) => {});
-
+app.get("/weather", authenticateUser, async (req, res) => {
+  try {
+    const user = await db.collection("users").findOne({
+      uid: req.user.uid,
+    });
+    const postalCode = user.postalCode;
+    const response = await axios.get(
+      `http://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=${postalCode}&days=1&alerts=yes`,
+    );
+    res.status(200).json(response.data);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
 
 app.get("/traffic", authenticateUser, async (req, res) => {});
-
 
 app.get("/tasks", authenticateUser, async (req, res) => {
   try {
@@ -108,7 +151,6 @@ app.get("/tasks", authenticateUser, async (req, res) => {
   }
 });
 
-
 app.post("/add-task", authenticateUser, async (req, res) => {
   try {
     const taskData = {
@@ -116,9 +158,8 @@ app.post("/add-task", authenticateUser, async (req, res) => {
       taskName: req.body.taskName,
       taskStartDate: req.body.taskStartDate,
       taskDeadline: req.body.taskDeadline,
-      taskLocation: req.body.taskLocation === "" 
-        ? "Unknown" 
-        : req.body.taskLocation,
+      taskLocation:
+        req.body.taskLocation === "" ? "Unknown" : req.body.taskLocation,
       taskDescription: req.body.taskDescription,
       taskCompleted: false,
       taskCompletionDate: null,
@@ -137,7 +178,6 @@ app.post("/add-task", authenticateUser, async (req, res) => {
     });
   }
 });
-
 
 app.get("/edit-task/:id", authenticateUser, async (req, res) => {
   try {
@@ -161,7 +201,6 @@ app.get("/edit-task/:id", authenticateUser, async (req, res) => {
     });
   }
 });
-
 
 app.put("/edit-task/:id", authenticateUser, async (req, res) => {
   try {
@@ -202,7 +241,6 @@ app.put("/edit-task/:id", authenticateUser, async (req, res) => {
   }
 });
 
-
 app.delete("/edit-task/:id", authenticateUser, async (req, res) => {
   try {
     const taskId = req.params.id;
@@ -227,7 +265,6 @@ app.delete("/edit-task/:id", authenticateUser, async (req, res) => {
     });
   }
 });
-
 
 app.put("/complete-task/:id", authenticateUser, async (req, res) => {
   try {
@@ -263,7 +300,6 @@ app.put("/complete-task/:id", authenticateUser, async (req, res) => {
   }
 });
 
-
 app.put("/uncomplete-task/:id", authenticateUser, async (req, res) => {
   try {
     const taskId = req.params.id;
@@ -290,6 +326,42 @@ app.put("/uncomplete-task/:id", authenticateUser, async (req, res) => {
 
     res.status(200).json({
       message: "Task reverted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.get("/settings", authenticateUser, async (req, res) => {
+  try {
+    const user = await db.collection("users").findOne({
+      uid: req.user.uid,
+    });
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    });
+  }
+});
+
+app.put("/settings", authenticateUser, async (req, res) => {
+  try {
+    await db.collection("users").updateOne(
+      {
+        uid: req.user.uid,
+      },
+      {
+        $set: {
+          postalCode: req.body.postalCode,
+        },
+      },
+    );
+
+    res.status(200).json({
+      message: "Settings updated successfully",
     });
   } catch (error) {
     res.status(500).json({

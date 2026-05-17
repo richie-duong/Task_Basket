@@ -230,7 +230,7 @@ export default function TasksPage() {
       <title>Task Basket | My Tasks</title>
       <div className="container mt-5">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="mb-0">My Tasks</h1>
+          <h1 className="fw-bold">My Tasks</h1>
 
           <Link to="/add-task" className="btn btn-primary">
             <i className="bi bi-plus-lg me-2"></i>

@@ -7,13 +7,12 @@ import formatDate from "../FormatDate";
 import getAuthHeaders from "../utils/getAuthHeaders";
 import { useId } from "react";
 
-
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([]);
+  const [weather, setWeather] = useState(null);
 
   async function fetchTasks() {
-
-  const config = await getAuthHeaders();
+    const config = await getAuthHeaders();
 
     try {
       const response = await axios.get("http://localhost:3000/tasks", config);
@@ -24,8 +23,24 @@ export default function DashboardPage() {
     }
   }
 
+  async function fetchWeather() {
+    try {
+      const config = await getAuthHeaders();
+      const response = await axios.get(
+        "http://localhost:3000/weather",
+
+        config,
+      );
+
+      setWeather(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     fetchTasks();
+    fetchWeather();
   }, []);
 
   const currentDate = new Date();
@@ -64,12 +79,26 @@ export default function DashboardPage() {
     return !isDueToday;
   });
 
+  const weatherAlert = weather?.alerts?.alert?.[0];
+
+  // Testing Purposes: Alert Banner
+  /*const weatherAlert = {
+    headline:
+      "Tornado Warning",
+    desc:
+      "Seek shelter immediately. Outdoor conditions may be dangerous.",
+    severity:
+      "Severe"
+  };*/
+
   async function completeTask(taskId) {
     try {
       const config = await getAuthHeaders();
-      await axios.put(`http://localhost:3000/complete-task/${taskId}`,
-        {}, 
-        config);
+      await axios.put(
+        `http://localhost:3000/complete-task/${taskId}`,
+        {},
+        config,
+      );
 
       fetchTasks();
     } catch (error) {
@@ -123,43 +152,63 @@ export default function DashboardPage() {
               </div>
             </div>
 
+            {weatherAlert ? (
+              <div className="alert alert-danger shadow-sm mb-4">
+                <div className="d-flex align-items-start gap-3">
+                  <i
+                    className="bi bi-exclamation-triangle-fill"
+                    style={{
+                      fontSize: "2rem",
+                    }}
+                  ></i>
+
+                  <div>
+                    <h4 className="fw-bold mb-2">{weatherAlert.headline}</h4>
+
+                    <p className="mb-2">{weatherAlert.desc}</p>
+
+                    <p className="mb-2 fw-semibold">
+                      This weather alert may affect your tasks due today.
+                      Consider rescheduling outdoor or travel-related
+                      activities.
+                    </p>
+
+                    <small className="fw-semibold">
+                      Severity: {weatherAlert.severity}
+                    </small>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
             {overdueTasks.length > 0 ? (
-              <div className="row mb-4">
-                <div className="col-12">
-                  <Link
-                    to="/tasks?tab=overdue"
-                    className="text-decoration-none"
-                  >
-                    <div className="card border-0 bg-danger-subtle border border-danger shadow-sm">
-                      <div className="card-body py-4">
-                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                          <div className="d-flex align-items-center">
-                            <div className="me-3">
-                              <i className="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-                            </div>
+              <div className="card border-0 bg-warning-subtle border border-warning shadow-sm mb-4">
+                <div className="card-body py-4">
+                  <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div className="d-flex align-items-center">
+                      <div className="me-3">
+                        <i className="bi bi-hourglass-split text-warning fs-1"></i>
+                      </div>
 
-                            <div>
-                              <h4 className="text-danger fw-bold mb-1">
-                                Overdue Task(s) Alert
-                              </h4>
+                      <div>
+                        <h4 className="text-warning-emphasis fw-bold mb-1">
+                          Overdue Task(s) Alert
+                        </h4>
 
-                              <p className="mb-0 text-dark">
-                                You currently have{" "}
-                                <b>{overdueTasks.length} overdue tasks</b>{" "}
-                                requiring attention.
-                              </p>
-                            </div>
-                          </div>
-
-                          <div>
-                            <span className="btn btn-danger">
-                              View Overdue Tasks
-                            </span>
-                          </div>
-                        </div>
+                        <p className="mb-0 text-dark">
+                          You currently have{" "}
+                          <b>{overdueTasks.length} overdue tasks</b> requiring
+                          attention.
+                        </p>
                       </div>
                     </div>
-                  </Link>
+
+                    <div>
+                      <span className="btn btn-warning">
+                        View Overdue Tasks
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : null}
@@ -168,20 +217,43 @@ export default function DashboardPage() {
               <div className="col-lg-5">
                 <div className="card border-0 bg-light mb-4">
                   <div className="card-body p-4">
-                    <h4 className="fw-bold mb-4">Today's Weather Forecast</h4>
+                    <h4 className="fw-bold mb-4">Current Weather Forecast</h4>
+                    {weather ? (
+                      <div className="card shadow-sm border-0 rounded-4 mb-4">
+                        <div className="card-body">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div>
+                              <h4 className="fw-bold mb-1">
+                                {weather.location.name}
+                              </h4>
 
-                    <div
-                      className="bg-secondary-subtle rounded-3 mb-3 d-flex justify-content-center align-items-center"
-                      style={{
-                        height: "180px",
-                      }}
-                    >
-                      <i className="bi bi-cloud-sun fs-1 text-secondary"></i>
-                    </div>
+                              <p className="text-muted mb-2">
+                                {weather.current.condition.text}
+                              </p>
 
-                    <p className="mb-0 text-muted">
-                      Weather integration coming soon.
-                    </p>
+                              <h2 className="fw-bold">
+                                {weather.current.temp_c}°C
+                              </h2>
+
+                              <p className="mb-0 small text-muted">
+                                Feels like {weather.current.feelslike_c}°C
+                              </p>
+                            </div>
+
+                            <div>
+                              <img
+                                src={weather.current.condition.icon}
+                                alt="Weather Icon"
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
 
@@ -192,14 +264,14 @@ export default function DashboardPage() {
                     <div
                       className="bg-secondary-subtle rounded-3 mb-3 d-flex justify-content-center align-items-center"
                       style={{
-                        height: "180px",
+                        height: "75px",
                       }}
                     >
                       <i className="bi bi-sign-turn-right fs-1 text-secondary"></i>
                     </div>
 
                     <p className="mb-0 text-muted">
-                      Traffic integration coming soon.
+                      Traffic integration coming soon!
                     </p>
                   </div>
                 </div>

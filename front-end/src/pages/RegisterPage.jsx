@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
-export default function RegisterPage() {
+import axios from "axios";
 
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -14,8 +16,10 @@ export default function RegisterPage() {
 
   async function registerUser(event) {
     event.preventDefault();
+
     setErrorMessage("");
 
+    // PASSWORD VALIDATION
     if (password !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
 
@@ -23,17 +27,35 @@ export default function RegisterPage() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+
+      const token = await userCredential.user.getIdToken();
+
+      await axios.post(
+        "http://localhost:3000/create-profile",
+        { 
+          postalCode 
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       alert("Your account was created successfully!");
       navigate("/dashboard");
-
     } catch (error) {
       console.log(error.code);
+
       console.log(error.message);
+
       setErrorMessage(error.message);
     }
   }
-
 
   return (
     <>
@@ -71,6 +93,23 @@ export default function RegisterPage() {
                       value={email}
                       onChange={(event) => {
                         setEmail(event.target.value);
+                      }}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">
+                      Postal Code
+                    </label>
+
+                    <input
+                      type="text"
+                      className="form-control form-control-lg"
+                      placeholder="Enter your postal code"
+                      value={postalCode}
+                      onChange={(event) => {
+                        setPostalCode(event.target.value);
                       }}
                       required
                     />
