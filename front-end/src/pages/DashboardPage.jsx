@@ -15,7 +15,7 @@ export default function DashboardPage() {
     const config = await getAuthHeaders();
 
     try {
-      const response = await axios.get("http://localhost:3000/tasks", config);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}:3000/tasks`, config);
 
       setTasks(response.data);
     } catch (error) {
@@ -27,7 +27,7 @@ export default function DashboardPage() {
     try {
       const config = await getAuthHeaders();
       const response = await axios.get(
-        "http://localhost:3000/weather",
+        `${import.meta.env.VITE_API_URL}:3000/weather`,
 
         config,
       );
@@ -95,7 +95,7 @@ export default function DashboardPage() {
     try {
       const config = await getAuthHeaders();
       await axios.put(
-        `http://localhost:3000/complete-task/${taskId}`,
+        `${import.meta.env.VITE_API_URL}:3000/complete-task/${taskId}`,
         {},
         config,
       );

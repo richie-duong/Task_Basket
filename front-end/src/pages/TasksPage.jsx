@@ -16,7 +16,7 @@ export default function TasksPage() {
   async function fetchTasks() {
     try {
       const config = await getAuthHeaders();
-      const response = await axios.get("http://localhost:3000/tasks", config);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}:3000/tasks`, config);
       setTasks(response.data);
     } catch (error) {
       console.log(error);
@@ -31,7 +31,7 @@ export default function TasksPage() {
   async function completeTask(taskId) {
     try {
       const config = await getAuthHeaders();
-      await axios.put(`http://localhost:3000/complete-task/${taskId}`, 
+      await axios.put(`${import.meta.env.VITE_API_URL}:3000/complete-task/${taskId}`, 
         {},
         config);
 
@@ -45,7 +45,7 @@ export default function TasksPage() {
   async function uncompleteTask(taskId) {
     try {
       const config = await getAuthHeaders();
-      await axios.put(`http://localhost:3000/uncomplete-task/${taskId}`,
+      await axios.put(`${import.meta.env.VITE_API_URL}/uncomplete-task/${taskId}`,
         {},
         config);
       fetchTasks();

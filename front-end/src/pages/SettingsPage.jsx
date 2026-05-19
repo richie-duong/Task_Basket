@@ -16,7 +16,7 @@ export default function SettingsPage() {
         const config = await getAuthHeaders();
 
         const response = await axios.get(
-          "http://localhost:3000/settings",
+          `${import.meta.env.VITE_API_URL}:3000/settings`,
           config,
         );
         setPostalCode(response.data.postalCode || "");
@@ -35,7 +35,7 @@ export default function SettingsPage() {
     try {
       const config = await getAuthHeaders();
       await axios.put(
-        "http://localhost:3000/settings",
+        `${import.meta.env.VITE_API_URL}:3000/settings`,
         {
           postalCode,
         },

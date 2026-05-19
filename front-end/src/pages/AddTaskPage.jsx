@@ -33,7 +33,7 @@ export default function AddTaskPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/add-task",
+        `${import.meta.env.VITE_API_URL}/add-task`,
         taskData,
         config
       );

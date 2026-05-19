@@ -24,7 +24,7 @@ export default function EditTaskPage() {
 
       try {
         const response = await axios.get(
-          `http://localhost:3000/edit-task/${id}`, 
+          `${import.meta.env.VITE_API_URL}:3000/edit-task/${id}`, 
           config
         );
 
@@ -62,7 +62,7 @@ export default function EditTaskPage() {
     };
 
     try {
-      await axios.put(`http://localhost:3000/edit-task/${id}`, updatedTask, config);
+      await axios.put(`${import.meta.env.VITE_API_URL}:3000/edit-task/${id}`, updatedTask, config);
 
       alert("Task updated successfully!");
 
@@ -83,7 +83,7 @@ export default function EditTaskPage() {
 
     try {
       const config = await getAuthHeaders();
-      await axios.delete(`http://localhost:3000/edit-task/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_API_URL}:3000/edit-task/${id}`, config);
       alert("Task deleted successfully!");
 
       navigate(-1);
