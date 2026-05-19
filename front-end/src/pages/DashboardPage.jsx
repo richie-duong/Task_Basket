@@ -251,6 +251,9 @@ export default function DashboardPage() {
                               />
                             </div>
                           </div>
+                          <p className="mb-0 text-muted py-3">
+                            <Link to="/settings">If this location is incorrect, click here.</Link>
+                          </p>
                         </div>
                       </div>
                     ) : null}

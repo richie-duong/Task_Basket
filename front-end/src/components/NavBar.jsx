@@ -4,8 +4,9 @@ import { auth } from "../firebase";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
-export default function NavBar() {
+import logo from "../assets/logo-white.svg";
 
+export default function NavBar() {
   const { currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -19,12 +20,32 @@ export default function NavBar() {
     }
   }
 
-
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
       <div className="container">
-        <Link to="/" className="navbar-brand fw-bold">
-          <i className="bi bi-basket2-fill me-2"></i>
+        <Link
+          to="/"
+          className="
+            navbar-brand
+            fw-bold
+            d-flex
+            align-items-center
+            gap-2
+            text-white
+          "
+        >
+          <img
+            src={logo}
+            alt="Task Basket Logo"
+            style={{
+              width: "38px",
+              height: "38px",
+              objectFit: "contain",
+
+              // THIS controls SVG color
+              color: "white",
+            }}
+          />
           Task Basket
         </Link>
 
