@@ -10,7 +10,6 @@ import dotenv from "dotenv";
 
 // Firebase authentication: serviceAccount contains Admin SDK Key
 import admin from "firebase-admin";
-import serviceAccount from "../firebase-service-account.json" with { type: "json" };
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -25,7 +24,11 @@ dotenv.config();
 
 // Initializing Firebase Admin
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  }),
 });
 
 // Firebase middleware
