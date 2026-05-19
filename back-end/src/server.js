@@ -1,3 +1,7 @@
+import path from "path";
+
+import { fileURLToPath } from "url";
+
 import express from "express";
 import axios from "axios";
 import cors from "cors";
@@ -7,6 +11,10 @@ import dotenv from "dotenv";
 // Firebase authentication: serviceAccount contains Admin SDK Key
 import admin from "firebase-admin";
 import serviceAccount from "../firebase-service-account.json" with { type: "json" };
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -368,6 +376,12 @@ app.put("/settings", authenticateUser, async (req, res) => {
       error: error.message,
     });
   }
+});
+
+app.use(express.static(path.join(__dirname, "../../front-end/dist")));
+
+app.get("/{*any}", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../front-end/dist/index.html"));
 });
 
 app.listen(3000, () => {
