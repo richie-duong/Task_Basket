@@ -34,7 +34,7 @@ export default function RegisterPage() {
       const token = await userCredential.user.getIdToken();
 
       await axios.post(
-        `${import.meta.env.VITE_API_URL}:3000/create-profile`,
+        `${import.meta.env.VITE_API_URL}/create-profile`,
         {
           postalCode,
         },
