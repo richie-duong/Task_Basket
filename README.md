@@ -122,9 +122,11 @@ Through building Task Basket, I developed experience with:
 
 ---
 
-# 🚀 Installation & Setup
-
-## Clone Repository
-
+# 📌 Future Improvements
+- Traffic API integration, to inform users if traffic could hinder their commute time
+- Add social aspects, such as inviting a friend, and assigning others tasks
+- Calendar functionality, for better and more user friendly visuals
+- More filtering options for completed tasks
+- More settings / accessibility options
 ```bash
 git clone https://github.com/yourusername/task-basket.git
