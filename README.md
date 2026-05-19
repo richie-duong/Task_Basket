@@ -128,5 +128,3 @@ Through building Task Basket, I developed experience with:
 - Calendar functionality, for better and more user friendly visuals
 - More filtering options for completed tasks
 - More settings / accessibility options
-```bash
-git clone https://github.com/yourusername/task-basket.git
